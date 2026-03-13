@@ -22,7 +22,7 @@
         justify-content: center;
         align-items: center;
         padding: 20px;
-        background: url('./img/bg.jpg') no-repeat center center fixed;
+        background: url('') no-repeat center center fixed;
         background-size: cover;
       }
 
@@ -302,15 +302,12 @@
         img.onload = () => {
           // 图片加载成功后，再设置为背景
           document.body.style.backgroundImage = `url('${imageUrl}')`;
-          // 隐藏加载提示
-          const tip = document.querySelector('.loading-tip');
-          if (tip) tip.style.display = 'none';
           console.log('新壁纸加载成功！');
         };
         img.onerror = () => {
           console.error('壁纸加载失败，请检查网络或稍后重试。');
           // 加载失败时可以设置一张默认图片
-          document.body.style.backgroundImage = `url('default-fallback.jpg')`;
+          document.body.style.backgroundImage = `url('./img/bg.jpg')`;
         };
       }
       window.onload = setRandomBackground;
