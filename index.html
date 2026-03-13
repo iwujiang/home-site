@@ -22,13 +22,15 @@
         justify-content: center;
         align-items: center;
         padding: 20px;
+        background: url('./img/bg.jpg') no-repeat center center fixed;
+        background-size: 100% auto;
       }
 
       .container {
         max-width: 900px;
         width: 100%;
         text-align: center;
-        background: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.5);
         padding: 40px 20px;
         border-radius: 16px;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
@@ -218,9 +220,14 @@
     </div>
 
     <script>
+      /**
+       * 获取随机名言并显示在页面上
+       * 使用了 quotable.io 的免费API，每次调用都会返回一条随机的名言
+       * 如果API请求失败，则显示一条默认的励志名言
+       */
       async function getQuote() {
         try {
-          const res = await fetch('https://api.quotable.io/random');
+          const res = await fetch('http://api.quotable.io/random');
           const data = await res.json();
           document.getElementById('quoteText').innerText = data.content;
           document.getElementById('quoteAuthor').innerText = '—— ' + data.author;
@@ -232,6 +239,11 @@
       getQuote();
       setInterval(getQuote, 3600000);
 
+      /**
+       * 设置常用导航模块
+       * 这里定义了一个包含常用网站信息的数组，每个对象包含网站名称、URL和图标URL
+       * 然后通过JavaScript动态生成HTML元素并插入到页面中，避免了在HTML中硬编码多个导航项
+       */
       function setNavModule() {
         var siteList = [
           { name: 'GitHub', url: 'https://github.com', img: 'https://github.githubassets.com/favicons/favicon.svg' },
@@ -261,6 +273,39 @@
         navGrid.innerHTML = htmlStr;
       }
       setNavModule();
+
+      /**
+       * 设置随机背景图片
+       * 使用了 picsum.photos 的免费API，每次调用都会返回一张随机的图片
+       * 通过预加载图片的方式，确保在图片完全加载后才设置为背景，避免页面闪烁
+       * 如果图片加载失败，则设置一张默认的备用图片作为背景
+       */
+      function setRandomBackground() {
+        // 设置一个较大的固定尺寸，适合桌面壁纸
+        var width = 1920;
+        var height = 1080;
+        // 核心：使用API的 /random 特性，并加上一个时间戳参数确保每次URL都不同，避免浏览器缓存旧图片
+        var imageUrl = `https://picsum.photos/${width}/${height}?random=${Date.now()}`;
+
+        // 一个重要的优化：使用JavaScript的Image对象预加载图片，等图片加载完再应用，避免闪烁 [citation:3][citation:8]
+        var img = new Image();
+        img.src = imageUrl;
+        img.onload = () => {
+          // 图片加载成功后，再设置为背景
+          document.body.style.backgroundImage = `url('${imageUrl}')`;
+          // 隐藏加载提示
+          const tip = document.querySelector('.loading-tip');
+          if (tip) tip.style.display = 'none';
+          console.log('新壁纸加载成功！');
+        };
+        img.onerror = () => {
+          console.error('壁纸加载失败，请检查网络或稍后重试。');
+          // 加载失败时可以设置一张默认图片
+          document.body.style.backgroundImage = `url('default-fallback.jpg')`;
+        };
+      }
+      window.onload = setRandomBackground;
+      setInterval(setRandomBackground, 3600000); // 3600000毫秒 = 1小时
     </script>
   </body>
 </html>
